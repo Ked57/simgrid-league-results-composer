@@ -150,7 +150,7 @@ function formatResultsForDiscord(results: MergedClassData[]): string {
       const position = formatStandingPosition(standing.position);
       const driver = truncateAndPad(standing.id.trim(), DRIVER_WIDTH);
       const car = truncateAndPad(standing.car.trim(), CAR_WIDTH);
-      const points = truncateAndPad(Math.round(standing.championshipPoints).toString(), POINTS_WIDTH);
+      const points = truncateAndPad(standing.championshipPoints.toFixed(1), POINTS_WIDTH);
       
       lines.push(`${position} | ${driver} | ${car} | ${points}`);
     }
