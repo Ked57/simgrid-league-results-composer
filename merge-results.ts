@@ -110,51 +110,34 @@ function assignPositions(standings: MergedStanding[]): MergedStanding[] {
   }));
 }
 
-function formatStandingPosition(position: number): string {
-  return `${position}.`.padStart(4);
-}
 
-function truncateAndPad(text: string, maxWidth: number): string {
-  if (text.length > maxWidth) {
-    return text.substring(0, maxWidth - 3) + "...";
-  }
-  return text.padEnd(maxWidth);
+function truncateText(text: string, maxLength: number): string {
+  if (text.length <= maxLength) return text;
+  return text.substring(0, maxLength - 1) + ".";
 }
 
 function formatResultsForDiscord(results: MergedClassData[]): string {
   const lines: string[] = [];
   
-  // Fixed column widths
-  const POS_WIDTH = 4;
-  const DRIVER_WIDTH = 30;
-  const CAR_WIDTH = 25;
-  const POINTS_WIDTH = 6;
+  // Fixed column widths for proper alignment
+  const POS_WIDTH = 4;  // " 1. " format
+  const DRIVER_WIDTH = 15;
+  const CAR_WIDTH = 13;
+  const POINTS_WIDTH = 3;  // "101" format
   
-  lines.push("# 🏁 Championship Standings\n");
+  lines.push("🏁 **Standings**\n");
   
   for (const classData of results) {
-    lines.push(`## ${classData.carClass}\n`);
+    lines.push(`**${classData.carClass}**`);
     lines.push("```");
-    lines.push(
-      truncateAndPad("Pos", POS_WIDTH) + " | " +
-      truncateAndPad("Driver", DRIVER_WIDTH) + " | " +
-      truncateAndPad("Car", CAR_WIDTH) + " | " +
-      truncateAndPad("Points", POINTS_WIDTH)
-    );
-    lines.push(
-      "-".repeat(POS_WIDTH) + " | " +
-      "-".repeat(DRIVER_WIDTH) + " | " +
-      "-".repeat(CAR_WIDTH) + " | " +
-      "-".repeat(POINTS_WIDTH)
-    );
     
     for (const standing of classData.standings) {
-      const position = formatStandingPosition(standing.position);
-      const driver = truncateAndPad(standing.id.trim(), DRIVER_WIDTH);
-      const car = truncateAndPad(standing.car.trim(), CAR_WIDTH);
-      const points = truncateAndPad(standing.championshipPoints.toFixed(0), POINTS_WIDTH);
+      const pos = `${standing.position}.`.padStart(POS_WIDTH);
+      const driver = truncateText(standing.id.trim(), DRIVER_WIDTH).padEnd(DRIVER_WIDTH);
+      const car = truncateText(standing.car.trim(), CAR_WIDTH).padEnd(CAR_WIDTH);
+      const points = standing.championshipPoints.toFixed(0).padStart(POINTS_WIDTH);
       
-      lines.push(`${position} | ${driver} | ${car} | ${points}`);
+      lines.push(`${pos} ${driver} | ${car} | ${points}`);
     }
     
     lines.push("```\n");
